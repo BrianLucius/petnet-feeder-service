@@ -18,6 +18,7 @@ class PetnetAuthPlugin(BaseAuthPlugin):
     ):  # pylint: disable=invalid-overridden-method
         authenticated = super().authenticate(*args, **kwargs)
         if not authenticated:
+            logger.debug("Not authenticated.")
             return False
 
         session = kwargs.get("session", None)
@@ -26,15 +27,19 @@ class PetnetAuthPlugin(BaseAuthPlugin):
             return False
 
         if session.username == local_username:
+            logger.debug("session password: %s", session.password)
             return session.password == local_password
 
         matches = self.username_regex.match(session.username)
         if not matches:
+            logger.debug("Username regex failed.")
             return False
 
         gateway_id = matches.group("gateway_id")
         try:
+            logger.debug("Finding gateway_id: %s, password: %s.", gateway_id, session.password)
             gateways = await KronosGateways.get(gateway_hid=gateway_id)
+            logger.debug("Gateway result: %s", gateways)
             success = gateways[0]["apiKey"] == session.password
             if not success:
                 logger.warning(
@@ -42,4 +47,6 @@ class PetnetAuthPlugin(BaseAuthPlugin):
                 )
             return success
         except Exception:  # pylint: disable=broad-except
-            return False
+            logger.debug("Gateway_id search exception.")
+            # return False  #When set to False, the new feeder wizard never fires for new unregistered feeders.
+            return True

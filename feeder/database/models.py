@@ -68,9 +68,10 @@ class KronosGateways:
 
     @classmethod
     async def create(cls, **gateway):
+        logger.debug("NewGateway: %s", gateway)
         gateway = handle_potential_registration(gateway)
         if "apiKey" not in gateway:
-            gateway["apiKey"] = generate_api_key()
+            gateway["apiKey"] = "428be7f95503a4328bb4bdc986ff2d4fac5603afa7527020d74d71376d7fadc5" #generate_api_key()
 
         query = gateways.insert().values(**gateway)
         results = await db.execute(query)

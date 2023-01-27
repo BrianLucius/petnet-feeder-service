@@ -36,7 +36,7 @@ class Settings(BaseSettings):
         "My pet feeder's cloud being shutdown was on my 2020 BINGO card."
     )
     app_id: str = "38973487e8241ea4483e88ef8ca7934c8663dc25"
-    debug: bool = False
+    debug: bool = True
     database_path: str = "./data.db"
     mqtt_port: int = 1883
     mqtts_port: int = 8883
